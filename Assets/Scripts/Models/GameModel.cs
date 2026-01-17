@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 public class GameModel
@@ -14,6 +14,7 @@ public class GameModel
     public CardModel GetCard(int index)
         => cards[index];
 
+
     public void CreateBoard(int pairs)
     {
         cards.Clear();
@@ -27,12 +28,14 @@ public class GameModel
         Shuffle();
     }
 
-    public void Select(CardModel card)
+    public void Select(int index, int cardId)
     {
-        if (card.IsMatched || card.IsFlipped)
-            return;
+        var card = new CardModel
+        {
+            Index = index,
+            Id = cardId
+        };
 
-        card.IsFlipped = true;
         open.Add(card);
 
         if (open.Count >= 2)
@@ -44,11 +47,10 @@ public class GameModel
         var a = open[0];
         var b = open[1];
 
-        bool match = a.Id == b.Id;
+        bool match = a.Id == b.Id;   // 👉 CORRECT!
 
         if (match)
         {
-            a.IsMatched = b.IsMatched = true;
             Score += 10;
             OnScoreChanged?.Invoke(Score);
         }
@@ -57,6 +59,7 @@ public class GameModel
 
         open.Clear();
     }
+
 
     void Shuffle()
     {
