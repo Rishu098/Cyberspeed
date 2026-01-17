@@ -7,15 +7,38 @@ public class BoardView : MonoBehaviour
     public GameObject cardPrefab;
     public RectTransform area;
 
+    public Sprite[] availableImages;
+
     List<CardView> views = new();
 
     public event Action<int> CardClicked;
+
+    public int Count => views.Count;
 
     public void Build(int rows, int cols)
     {
         Clear();
 
-        // get real panel size
+        int total = rows * cols;
+        int pairs = total / 2;
+
+        // ---- CREATE RANDOM ID LIST ----
+        List<int> ids = new List<int>();
+
+        for (int i = 0; i < pairs; i++)
+        {
+            ids.Add(i);
+            ids.Add(i);
+        }
+
+        // shuffle
+        for (int i = 0; i < ids.Count; i++)
+        {
+            int r = UnityEngine.Random.Range(i, ids.Count);
+            (ids[i], ids[r]) = (ids[r], ids[i]);
+        }
+
+        // ===== POSITION CALC =====
         float width = area.rect.width;
         float height = area.rect.height;
 
@@ -24,22 +47,35 @@ public class BoardView : MonoBehaviour
 
         float size = Mathf.Min(cellW, cellH);
 
-        // --- CENTER GRID ---
         float gridW = size * cols;
         float gridH = size * rows;
 
         float offsetX = (width - gridW) / 2f;
         float offsetY = (height - gridH) / 2f;
+        // =========================
 
-        for (int i = 0; i < rows * cols; i++)
+        // ---- CREATE CARDS ----
+        for (int i = 0; i < total; i++)
         {
             var go = Instantiate(cardPrefab, area);
+
+            var view = go.GetComponent<CardView>();
+
+            view.Index = i;
+            view.SetImage(availableImages[ids[i]], ids[i]);
+
+            int currentIndex = i;
+
+            view.Clicked += _ => CardClicked?.Invoke(currentIndex);
+
+            views.Add(view);
+
+            // ===== POSITIONING =====
             RectTransform rt = go.GetComponent<RectTransform>();
 
             int x = i % cols;
             int y = i / cols;
 
-            // FORCE LOCAL UI MODE
             rt.anchorMin = new Vector2(0, 1);
             rt.anchorMax = new Vector2(0, 1);
             rt.pivot = new Vector2(0.5f, 0.5f);
@@ -50,24 +86,65 @@ public class BoardView : MonoBehaviour
                 offsetX + (x + 0.5f) * size,
                -(offsetY + (y + 0.5f) * size)
             );
-
-            var v = go.GetComponent<CardView>();
-            v.Index = i;
-            v.Clicked += id => CardClicked?.Invoke(id);
-
-            views.Add(v);
+            // ========================
         }
     }
 
+    // ----------- SAFE METHODS -----------
 
+    private void SafeHide(int index)
+    {
+        if (index < 0 || index >= views.Count)
+            return;
 
-    public void ShowFlip(int index, bool show)
-        => views[index].Flip(show);
+        var v = views[index];
+        if (v == null)
+            return;
+
+        v.SetMatched();
+        v.gameObject.SetActive(false);
+    }
 
     public void SetMatched(CardModel a, CardModel b)
     {
-        views[a.Id].SetMatched();
-        views[b.Id].SetMatched();
+        SafeHide(a.Index);
+        SafeHide(b.Index);
+    }
+
+    public void HideCard(int index)
+    {
+        if (index < 0 || index >= views.Count)
+            return;
+
+        views[index].gameObject.SetActive(false);
+    }
+
+    public void ShowFlip(int index, bool show)
+    {
+        if (index < 0 || index >= views.Count)
+            return;
+
+        var v = views[index];
+        if (v == null || !v.gameObject.activeSelf)
+            return;
+
+        v.Flip(show);
+    }
+
+    public CardView GetView(int index)
+    {
+        if (index < 0 || index >= views.Count)
+            return null;
+
+        return views[index];
+    }
+
+    public bool IsValid(int index)
+    {
+        return index >= 0 &&
+               index < views.Count &&
+               views[index] != null &&
+               views[index].gameObject.activeSelf;
     }
 
     void Clear()
