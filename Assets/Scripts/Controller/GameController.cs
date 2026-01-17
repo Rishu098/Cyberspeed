@@ -41,35 +41,36 @@ public class GameController : MonoBehaviour
         board.ShowFlip(index, true);
     }
 
-
- async void OnCompared(CardModel a, CardModel b, bool match)
-{
-    int indexA = a.Index;
-    int indexB = b.Index;
-
-    // Validate immediately
-    if (!board.IsValid(indexA) || !board.IsValid(indexB))
-        return;
-
-    if (match)
+    async void OnCompared(CardModel a, CardModel b, bool match)
     {
-        board.SetMatched(a, b);
-        return;
-    }
+        int indexA = a.Index;
+        int indexB = b.Index;
 
-    isComparing = true;
+        // ---- MATCH CASE ----
+        if (match)
+        {
+            isComparing = true;
 
-    await System.Threading.Tasks.Task.Delay(600);
+            // 👉 WAIT so player can see second card
+            await System.Threading.Tasks.Task.Delay(500);
 
-    // Validate AGAIN after delay
-    if (board.IsValid(indexA))
+            board.SetMatched(a, b);
+
+            isComparing = false;
+            return;
+        }
+
+        // ---- MISMATCH CASE ----
+        isComparing = true;
+
+        await System.Threading.Tasks.Task.Delay(600);
+
         board.ShowFlip(indexA, false);
-
-    if (board.IsValid(indexB))
         board.ShowFlip(indexB, false);
 
-    isComparing = false;
-}
+        isComparing = false;
+    }
+
 
 
 }
