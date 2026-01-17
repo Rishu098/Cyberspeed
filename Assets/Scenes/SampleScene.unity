@@ -221,6 +221,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 4411299363967284993, guid: 82516dcf41a81b544b0faf38134305d6, type: 3}
   area: {fileID: 565402248}
+  availableImages:
+  - {fileID: 893093088, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: -412724694, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: -1182024033, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: -1254729082, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: -940877278, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: -79872422, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: 1976370343, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
+  - {fileID: 1873597313, guid: 8e709493424a4134197dbabf5751a0b4, type: 3}
 --- !u!4 &475452880
 Transform:
   m_ObjectHideFlags: 0
