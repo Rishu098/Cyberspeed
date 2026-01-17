@@ -1,6 +1,5 @@
 public class CardModel
 {
-    public int Id;
-    public bool IsMatched;
-    public bool IsFlipped;
+    public int Id;      // image id
+    public int Index;   // position in grid
 }
