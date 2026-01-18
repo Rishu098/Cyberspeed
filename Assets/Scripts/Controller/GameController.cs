@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Collections;
 
 public class GameController : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class GameController : MonoBehaviour
     GameModel model;
 
     bool isComparing = false;
+
+    [SerializeField] float previewTime = 0.5f;
+    bool isPreviewing = false;
 
 
     void Start()
@@ -52,6 +56,7 @@ public class GameController : MonoBehaviour
         if (losePanel != null)
             losePanel.SetActive(false);
 
+        StartCoroutine(PreviewRoutine());
         Subscribe();
     }
 
@@ -59,16 +64,14 @@ public class GameController : MonoBehaviour
 
     void OnCardClicked(int index)
     {
-        if (isComparing) return;
+        if (isComparing || isPreviewing) return;
 
         var view = board.GetView(index);
         if (view == null) return;
 
-        // 👉 USE EXISTING totalClicks
         totalClicks++;
         UpdateClickUI();
 
-        // 👉 LOSE CHECK
         if (totalClicks >= maxAllowedClicks)
         {
             LoseGame();
@@ -169,6 +172,26 @@ public class GameController : MonoBehaviour
             losePanel.SetActive(true);
 
         isComparing = true;   // stop further play
+    }
+
+    public IEnumerator PreviewRoutine()
+    {
+        isPreviewing = true;
+        isComparing = true;   // block input
+
+        // 1. Flip all cards open
+        for (int i = 0; i < board.Count; i++)
+            board.ShowFlip(i, true);
+
+        // 2. Wait preview time
+        yield return new WaitForSeconds(previewTime);
+
+        // 3. Flip all back
+        for (int i = 0; i < board.Count; i++)
+            board.ShowFlip(i, false);
+
+        isPreviewing = false;
+        isComparing = false;
     }
 
 
