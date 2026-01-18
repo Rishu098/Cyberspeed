@@ -15,6 +15,9 @@ public class GameController : MonoBehaviour
     int totalClicks = 0;
     public TextMeshProUGUI clickText;
 
+    int maxAllowedClicks; 
+
+    public GameObject losePanel;
 
     GameModel model;
 
@@ -37,6 +40,8 @@ public class GameController : MonoBehaviour
         totalPairs = (r * c) / 2;
         matchedPairs = 0;
 
+        maxAllowedClicks = totalPairs * 2;
+
         totalClicks = 0;
         UpdateClickUI();
 
@@ -44,8 +49,12 @@ public class GameController : MonoBehaviour
 
         winPanel.SetActive(false);
 
+        if (losePanel != null)
+            losePanel.SetActive(false);
+
         Subscribe();
     }
+
 
 
     void OnCardClicked(int index)
@@ -55,13 +64,22 @@ public class GameController : MonoBehaviour
         var view = board.GetView(index);
         if (view == null) return;
 
-        // 👉 COUNT EVERY CARD CLICK
+        // 👉 USE EXISTING totalClicks
         totalClicks++;
         UpdateClickUI();
+
+        // 👉 LOSE CHECK
+        if (totalClicks >= maxAllowedClicks)
+        {
+            LoseGame();
+            return;
+        }
 
         model.Select(index, view.CardId);
         board.ShowFlip(index, true);
     }
+
+
 
 
     async void OnCompared(CardModel a, CardModel b, bool match)
@@ -78,11 +96,11 @@ public class GameController : MonoBehaviour
 
             board.SetMatched(a, b);
 
-            matchedPairs++;          // 👈 COUNT MATCH
+            matchedPairs++;         
 
             UpdatePairUI();
 
-            CheckWin();              // 👈 CHECK GAME OVER
+            CheckWin();             
 
             isComparing = false;
             return;
@@ -103,7 +121,8 @@ public class GameController : MonoBehaviour
     void UpdatePairUI()
     {
         if (pairText != null)
-            pairText.text = $"{matchedPairs} / {totalPairs}";
+            pairText.text = $"Pairs: {matchedPairs} / {totalPairs}";
+
     }
 
     void CheckWin()
@@ -139,8 +158,19 @@ public class GameController : MonoBehaviour
     void UpdateClickUI()
     {
         if (clickText != null)
-            clickText.text = $"Clicks: {totalClicks}";
+            clickText.text = $"Clicks: {totalClicks} / {maxAllowedClicks}";
     }
+
+    void LoseGame()
+    {
+        Debug.Log("YOU LOSE – max clicks reached");
+
+        if (losePanel != null)
+            losePanel.SetActive(true);
+
+        isComparing = true;   // stop further play
+    }
+
 
 
 }
