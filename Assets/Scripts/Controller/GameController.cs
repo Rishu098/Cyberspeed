@@ -53,6 +53,8 @@ public class GameController : MonoBehaviour
 
         winPanel.SetActive(false);
 
+        scoreText.text = "Score: 0";
+
         if (losePanel != null)
             losePanel.SetActive(false);
 
@@ -156,6 +158,8 @@ public class GameController : MonoBehaviour
     {
         board.CardClicked += OnCardClicked;
         model.OnCompared += OnCompared;
+        model.OnScoreChanged += UpdateScoreUI;
+
     }
 
     void UpdateClickUI()
@@ -163,6 +167,13 @@ public class GameController : MonoBehaviour
         if (clickText != null)
             clickText.text = $"Clicks: {totalClicks} / {maxAllowedClicks}";
     }
+
+    void UpdateScoreUI(int s)
+    {
+        if (scoreText != null)
+            scoreText.text = "Score: " + s;
+    }
+
 
     void LoseGame()
     {

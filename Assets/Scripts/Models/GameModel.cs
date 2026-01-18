@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GameModel
 {
@@ -11,9 +12,10 @@ public class GameModel
     List<CardModel> cards = new();
     List<CardModel> open = new();
 
+    int combo = 0;   // streak system
+
     public CardModel GetCard(int index)
         => cards[index];
-
 
     public void CreateBoard(int pairs)
     {
@@ -26,6 +28,11 @@ public class GameModel
         }
 
         Shuffle();
+
+        // reset score
+        Score = 0;
+        combo = 0;
+        OnScoreChanged?.Invoke(Score);
     }
 
     public void Select(int index, int cardId)
@@ -47,12 +54,21 @@ public class GameModel
         var a = open[0];
         var b = open[1];
 
-        bool match = a.Id == b.Id;   // 👉 CORRECT!
+        bool match = a.Id == b.Id;
 
         if (match)
         {
-            Score += 10;
-            OnScoreChanged?.Invoke(Score);
+            combo++;
+
+            // base + combo bonus
+            AddScore(10 + combo * 2);
+        }
+        else
+        {
+            combo = 0;
+
+            // small penalty but never below 0
+            AddScore(-2);
         }
 
         OnCompared?.Invoke(a, b, match);
@@ -60,10 +76,15 @@ public class GameModel
         open.Clear();
     }
 
+    void AddScore(int amount)
+    {
+        Score = Mathf.Max(0, Score + amount);
+        OnScoreChanged?.Invoke(Score);
+    }
 
     void Shuffle()
     {
-        var rng = new Random();
+        var rng = new System.Random();
 
         for (int i = 0; i < cards.Count; i++)
         {
@@ -71,5 +92,11 @@ public class GameModel
             (cards[i], cards[r]) =
             (cards[r], cards[i]);
         }
+    }
+
+    // Optional bonus from controller
+    public void AddBonus(int amount)
+    {
+        AddScore(amount);
     }
 }
