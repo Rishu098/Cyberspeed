@@ -539,7 +539,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!224 &459643951
 RectTransform:
@@ -814,7 +814,6 @@ MonoBehaviour:
   winPanel: {fileID: 930773025}
   pairText: {fileID: 1604969251}
   clickText: {fileID: 1757286416}
-  maxAllowedClicks: 40
   losePanel: {fileID: 1243476034}
 --- !u!4 &701241335
 Transform:
