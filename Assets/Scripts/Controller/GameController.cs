@@ -37,6 +37,9 @@ public class GameController : MonoBehaviour
         totalPairs = (r * c) / 2;
         matchedPairs = 0;
 
+        totalClicks = 0;
+        UpdateClickUI();
+
         UpdatePairUI();
 
         winPanel.SetActive(false);
@@ -47,14 +50,19 @@ public class GameController : MonoBehaviour
 
     void OnCardClicked(int index)
     {
-        if (isComparing) return;   // 👈 NEW
+        if (isComparing) return;
 
         var view = board.GetView(index);
+        if (view == null) return;
+
+        // 👉 COUNT EVERY CARD CLICK
+        totalClicks++;
+        UpdateClickUI();
 
         model.Select(index, view.CardId);
-
         board.ShowFlip(index, true);
     }
+
 
     async void OnCompared(CardModel a, CardModel b, bool match)
     {
@@ -127,5 +135,12 @@ public class GameController : MonoBehaviour
         board.CardClicked += OnCardClicked;
         model.OnCompared += OnCompared;
     }
+
+    void UpdateClickUI()
+    {
+        if (clickText != null)
+            clickText.text = $"Clicks: {totalClicks}";
+    }
+
 
 }
