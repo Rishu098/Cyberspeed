@@ -1,9 +1,20 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
+using System.Threading.Tasks;
 
 public class GameController : MonoBehaviour
 {
     public BoardView board;
-    public TMPro.TextMeshProUGUI scoreText;
+    public TextMeshProUGUI scoreText;
+    int totalPairs;
+    int matchedPairs = 0;
+
+    public GameObject winPanel;   
+    public TextMeshProUGUI pairText;
+
+    int totalClicks = 0;
+    public TextMeshProUGUI clickText;
+
 
     GameModel model;
 
@@ -23,12 +34,16 @@ public class GameController : MonoBehaviour
 
         board.Build(r, c);
 
-        board.CardClicked += OnCardClicked;
+        totalPairs = (r * c) / 2;
+        matchedPairs = 0;
 
-        model.OnCompared += OnCompared;
-        model.OnScoreChanged +=
-            s => scoreText.text = s.ToString();
+        UpdatePairUI();
+
+        winPanel.SetActive(false);
+
+        Subscribe();
     }
+
 
     void OnCardClicked(int index)
     {
@@ -51,14 +66,20 @@ public class GameController : MonoBehaviour
         {
             isComparing = true;
 
-            // 👉 WAIT so player can see second card
-            await System.Threading.Tasks.Task.Delay(500);
+            await Task.Delay(500);
 
             board.SetMatched(a, b);
+
+            matchedPairs++;          // 👈 COUNT MATCH
+
+            UpdatePairUI();
+
+            CheckWin();              // 👈 CHECK GAME OVER
 
             isComparing = false;
             return;
         }
+
 
         // ---- MISMATCH CASE ----
         isComparing = true;
@@ -71,6 +92,40 @@ public class GameController : MonoBehaviour
         isComparing = false;
     }
 
+    void UpdatePairUI()
+    {
+        if (pairText != null)
+            pairText.text = $"{matchedPairs} / {totalPairs}";
+    }
 
+    void CheckWin()
+    {
+        if (matchedPairs >= totalPairs)
+        {
+            GameOver();
+        }
+    }
+
+    void GameOver()
+    {
+        Debug.Log("YOU WIN!");
+
+        if (winPanel != null)
+            winPanel.SetActive(true);
+
+        // optional sound
+        // audio.PlayGameOver();
+    }
+
+    public void Restart()
+    {
+        NewGame(4, 4);   // or your chosen size
+    }
+
+    void Subscribe()
+    {
+        board.CardClicked += OnCardClicked;
+        model.OnCompared += OnCompared;
+    }
 
 }
