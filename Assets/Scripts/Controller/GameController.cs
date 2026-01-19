@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -31,8 +32,13 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        LoadGame();
+        // if save exists → load, else new
+        if (SaveManager.Load() != null)
+            LoadGame();
+        else
+            NewGame(4, 4);
     }
+
 
     public void NewGame(int r, int c)
     {
@@ -293,6 +299,12 @@ public class GameController : MonoBehaviour
 
         if (model != null)
             model.OnCompared -= OnCompared;
+    }
+
+    public void BackToMenu()
+    {
+        SaveGame();
+        SceneManager.LoadScene("MenuScene");
     }
 
 }
