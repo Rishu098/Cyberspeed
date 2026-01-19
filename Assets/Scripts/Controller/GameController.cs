@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameController : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class GameController : MonoBehaviour
     public void NewGame(int r, int c)
     {
         model = new GameModel();
-
+        Unsubscribe();
         model.CreateBoard((r * c) / 2);
 
         board.Build(r, c);
@@ -210,52 +211,78 @@ public class GameController : MonoBehaviour
     {
         SaveData d = new SaveData();
 
-        d.score = model.Score;
+        d.score = model.Score;      
         d.clicks = totalClicks;
         d.matchedPairs = matchedPairs;
 
-        d.rows = 4;   // or store your current size vars
+        d.rows = 4;
         d.cols = 4;
 
         d.cardIds = board.GetCardIds();
         d.matchedIndexes = board.GetMatchedIndexes();
 
         SaveManager.Save(d);
-
-        Debug.Log("Game Saved");
     }
+
 
     public void LoadGame()
     {
         var d = SaveManager.Load();
 
+        // --- No save → normal start ---
         if (d == null)
         {
-            Debug.Log("No save found");
             NewGame(4, 4);
             return;
         }
 
-        // rebuild board
+        // --- Rebuild board first ---
         NewGame(d.rows, d.cols);
 
+        // --- RESTORE VALUES ---
         totalClicks = d.clicks;
         matchedPairs = d.matchedPairs;
+
+        //restore score into model
+        model.RestoreScore(d.score);
 
         UpdateClickUI();
         UpdatePairUI();
 
-        // restore matched cards
+        // restore solved cards
         foreach (int i in d.matchedIndexes)
             board.HideCard(i);
 
-        Debug.Log("Game Loaded");
+        Debug.Log("Game Loaded with score: " + d.score);
     }
+
 
     void OnApplicationQuit()
     {
         SaveGame();
     }
 
+    public void RestartNewGame()
+    {
+        // Optional: remove saved progress so load doesn’t restore old state
+        SaveManager.Clear();
+
+        // Start a completely fresh game
+        NewGame(4, 4);
+
+        // Re-enable input in case game ended in win/lose
+        isComparing = false;
+
+        Debug.Log("New game started");
+    }
+
+    void Unsubscribe()
+    {
+        if (board != null)
+            board.CardClicked -= OnCardClicked;
+
+        if (model != null)
+            model.OnCompared -= OnCompared;
+    }
 
 }

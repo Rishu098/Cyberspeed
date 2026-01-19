@@ -99,4 +99,12 @@ public class GameModel
     {
         AddScore(amount);
     }
+
+    public void RestoreScore(int s)
+    {
+        Score = s;
+        OnScoreChanged?.Invoke(Score);
+    }
+
+
 }
