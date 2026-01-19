@@ -62,7 +62,10 @@ public class BoardView : MonoBehaviour
             var view = go.GetComponent<CardView>();
 
             view.Index = i;
-            view.SetImage(availableImages[ids[i]], ids[i]);
+            int imageIndex = ids[i] % availableImages.Length;
+
+            view.SetImage(availableImages[imageIndex], ids[i]);
+
 
             int currentIndex = i;
 
