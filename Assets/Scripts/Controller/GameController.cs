@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        NewGame(4,4);
+        LoadGame();
     }
 
     public void NewGame(int r, int c)
@@ -108,6 +108,7 @@ public class GameController : MonoBehaviour
             CheckWin();             
 
             isComparing = false;
+            SaveGame();
             return;
         }
 
@@ -205,6 +206,56 @@ public class GameController : MonoBehaviour
         isComparing = false;
     }
 
+    public void SaveGame()
+    {
+        SaveData d = new SaveData();
+
+        d.score = model.Score;
+        d.clicks = totalClicks;
+        d.matchedPairs = matchedPairs;
+
+        d.rows = 4;   // or store your current size vars
+        d.cols = 4;
+
+        d.cardIds = board.GetCardIds();
+        d.matchedIndexes = board.GetMatchedIndexes();
+
+        SaveManager.Save(d);
+
+        Debug.Log("Game Saved");
+    }
+
+    public void LoadGame()
+    {
+        var d = SaveManager.Load();
+
+        if (d == null)
+        {
+            Debug.Log("No save found");
+            NewGame(4, 4);
+            return;
+        }
+
+        // rebuild board
+        NewGame(d.rows, d.cols);
+
+        totalClicks = d.clicks;
+        matchedPairs = d.matchedPairs;
+
+        UpdateClickUI();
+        UpdatePairUI();
+
+        // restore matched cards
+        foreach (int i in d.matchedIndexes)
+            board.HideCard(i);
+
+        Debug.Log("Game Loaded");
+    }
+
+    void OnApplicationQuit()
+    {
+        SaveGame();
+    }
 
 
 }

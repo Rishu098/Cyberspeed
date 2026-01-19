@@ -154,4 +154,26 @@ public class BoardView : MonoBehaviour
 
         views.Clear();
     }
+
+    public int[] GetCardIds()
+{
+    int[] ids = new int[views.Count];
+
+    for (int i = 0; i < views.Count; i++)
+        ids[i] = views[i].CardId;
+
+    return ids;
+}
+
+public int[] GetMatchedIndexes()
+{
+    var list = new List<int>();
+
+    for (int i = 0; i < views.Count; i++)
+        if (!views[i].gameObject.activeSelf)
+            list.Add(i);
+
+    return list.ToArray();
+}
+
 }
