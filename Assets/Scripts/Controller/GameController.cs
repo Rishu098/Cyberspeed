@@ -51,7 +51,7 @@ public class GameController : MonoBehaviour
         totalPairs = (r * c) / 2;
         matchedPairs = 0;
 
-        maxAllowedClicks = totalPairs * 2;
+        maxAllowedClicks = totalPairs * 4;
 
         totalClicks = 0;
         UpdateClickUI();
