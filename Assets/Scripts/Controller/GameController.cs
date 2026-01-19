@@ -67,23 +67,27 @@ public class GameController : MonoBehaviour
 
     void OnCardClicked(int index)
     {
-        if (isComparing || isPreviewing) return;
+        if (isComparing) return;
 
         var view = board.GetView(index);
         if (view == null) return;
 
+        // Flip first so player sees card
+        board.ShowFlip(index, true);
+
+        // Then process logic
         totalClicks++;
         UpdateClickUI();
 
+        model.Select(index, view.CardId);
+
+        // After reveal → check lose
         if (totalClicks >= maxAllowedClicks)
         {
             LoseGame();
-            return;
         }
-
-        model.Select(index, view.CardId);
-        board.ShowFlip(index, true);
     }
+
 
 
 
