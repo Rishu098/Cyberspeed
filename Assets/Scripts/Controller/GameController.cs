@@ -102,7 +102,9 @@ public class GameController : MonoBehaviour
 
             board.SetMatched(a, b);
 
-            matchedPairs++;         
+            matchedPairs++;
+
+            SoundManager.I?.PlayMatch();
 
             UpdatePairUI();
 
@@ -118,6 +120,8 @@ public class GameController : MonoBehaviour
         isComparing = true;
 
         await System.Threading.Tasks.Task.Delay(600);
+
+        SoundManager.I?.PlayMismatch();
 
         board.ShowFlip(indexA, false);
         board.ShowFlip(indexB, false);
@@ -144,11 +148,10 @@ public class GameController : MonoBehaviour
     {
         Debug.Log("YOU WIN!");
 
+        SoundManager.I?.PlayGameOver();
+
         if (winPanel != null)
             winPanel.SetActive(true);
-
-        // optional sound
-        // audio.PlayGameOver();
     }
 
     public void Restart()

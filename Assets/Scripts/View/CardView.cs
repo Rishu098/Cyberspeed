@@ -27,6 +27,8 @@ public class CardView : MonoBehaviour
 
     public void Flip(bool show)
     {
+        SoundManager.I?.PlayFlip();
+
         StopAllCoroutines();
         StartCoroutine(FlipAnim(show));
     }
