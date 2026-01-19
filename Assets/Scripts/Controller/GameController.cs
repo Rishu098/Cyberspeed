@@ -32,12 +32,12 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        // if save exists → load, else new
         if (SaveManager.Load() != null)
             LoadGame();
         else
-            NewGame(4, 4);
+            NewGame(GameSettings.Rows, GameSettings.Cols);
     }
+
 
 
     public void NewGame(int r, int c)
@@ -167,8 +167,10 @@ public class GameController : MonoBehaviour
 
     public void Restart()
     {
-        NewGame(4, 4);   // or your chosen size
+        SaveManager.Clear();
+        NewGame(GameSettings.Rows, GameSettings.Cols);
     }
+
 
     void Subscribe()
     {
@@ -231,8 +233,8 @@ public class GameController : MonoBehaviour
         d.clicks = totalClicks;
         d.matchedPairs = matchedPairs;
 
-        d.rows = 4;
-        d.cols = 4;
+        d.rows = GameSettings.Rows;
+        d.cols = GameSettings.Cols;
 
         d.cardIds = board.GetCardIds();
         d.matchedIndexes = board.GetMatchedIndexes();

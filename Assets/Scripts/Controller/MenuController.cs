@@ -13,9 +13,21 @@ public class MenuController : MonoBehaviour
         );
     }
 
-    public void NewGame()
+    public void StartGrid(int size)
     {
-        SaveManager.Clear();       // remove old progress
+        GameSettings.Rows = size;
+        GameSettings.Cols = size;
+
+        SaveManager.Clear();          // new game
+        SceneManager.LoadScene("GameScene");
+    }
+
+    public void StartGrid5x6()
+    {
+        GameSettings.Rows = 5;
+        GameSettings.Cols = 6;
+
+        SaveManager.Clear();
         SceneManager.LoadScene("GameScene");
     }
 
