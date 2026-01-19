@@ -25,13 +25,15 @@ public class CardView : MonoBehaviour
 
     // -------- FLIP LOGIC --------
 
-    public void Flip(bool show)
+    public void Flip(bool show, bool playSound = true)
     {
-        SoundManager.I?.PlayFlip();
+        if (playSound)
+            SoundManager.I?.PlayFlip();
 
         StopAllCoroutines();
         StartCoroutine(FlipAnim(show));
     }
+
 
     System.Collections.IEnumerator FlipAnim(bool show)
     {

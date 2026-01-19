@@ -123,8 +123,9 @@ public class GameController : MonoBehaviour
 
         SoundManager.I?.PlayMismatch();
 
-        board.ShowFlip(indexA, false);
-        board.ShowFlip(indexB, false);
+        board.ShowFlip(indexA, false, false);   // silent
+        board.ShowFlip(indexB, false, false);   // silent
+
 
         isComparing = false;
     }
@@ -183,6 +184,7 @@ public class GameController : MonoBehaviour
     void LoseGame()
     {
         Debug.Log("YOU LOSE – max clicks reached");
+        SoundManager.I?.PlayGameOver();
 
         if (losePanel != null)
             losePanel.SetActive(true);
@@ -197,14 +199,15 @@ public class GameController : MonoBehaviour
 
         // 1. Flip all cards open
         for (int i = 0; i < board.Count; i++)
-            board.ShowFlip(i, true);
+            board.ShowFlip(i, true, false);   // no sound
 
         // 2. Wait preview time
         yield return new WaitForSeconds(previewTime);
 
         // 3. Flip all back
         for (int i = 0; i < board.Count; i++)
-            board.ShowFlip(i, false);
+            board.ShowFlip(i, false, false);
+
 
         isPreviewing = false;
         isComparing = false;

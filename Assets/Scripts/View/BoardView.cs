@@ -119,17 +119,13 @@ public class BoardView : MonoBehaviour
         views[index].gameObject.SetActive(false);
     }
 
-    public void ShowFlip(int index, bool show)
+    public void ShowFlip(int index, bool show, bool playSound = true)
     {
-        if (index < 0 || index >= views.Count)
-            return;
+        if (index < 0 || index >= views.Count) return;
 
-        var v = views[index];
-        if (v == null || !v.gameObject.activeSelf)
-            return;
-
-        v.Flip(show);
+        views[index].Flip(show, playSound);
     }
+
 
     public CardView GetView(int index)
     {
